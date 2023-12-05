@@ -73,27 +73,48 @@ export async function AggBestSellCategoriesByYear(collection) {
             }
         },
       
-        {
-            $project: {
-                _id: 0,
-                brand: "$_id.brand",
-                primaryCategories: "$_id.primaryCategories",
-                year: "$_id.year",
-                count: 1
-            }
-        },
+        // {
+        //     $project: {
+        //         _id: 0,
+        //         brand: "$_id.brand",
+        //         primaryCategories: "$_id.primaryCategories",
+        //         year: "$_id.year",
+        //         count: 1
+        //     }
+        // },
         {
             $sort: { count: -1 }
-        }
+        },
+        {
+            $group: {
+              _id: { brand: "$_id.brand", year: "$_id.year" },
+              topCategory: { $first: "$_id.primaryCategories" },
+              count: { $first: "$count" },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              brand: "$_id.brand",
+              year: "$_id.year",
+              
+              topCategory: 1,
+              count: 1,
+            },
+          },
+          {
+            $sort: { year: 1, count: -1 },
+          },
 
     ];
 
-    const aggCursor = coll.aggregate(pipeline);
+    const aggCursor =  await coll.aggregate(pipeline).toArray();
 
-    // for await (const doc of aggCursor) {
-    //     console.log(doc);
-    // }
-    console.log("arr",aggCursor.toArray())
+    for await (const doc of aggCursor) {
+        console.log(doc);
+    }
+    // )const c = await aggCursor.toArray(
+    console.log("arr",  aggCursor)
 
-    return aggCursor.toArray();
+    return aggCursor;
 }

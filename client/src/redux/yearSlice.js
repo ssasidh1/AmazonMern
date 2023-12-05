@@ -8,10 +8,10 @@ const yearSlice = createSlice({
     reducers:{
         getYRData :(state, actions) =>{
             state.data = actions.payload.map((item,ind)=>{
-                return {id:ind, 
+                return {
                     year:item.year,
                      brand: item.brand,
-                     pC : item.primaryCategories,
+                     topCategory : item.topCategory,
                      count: item.count}
                 })
         }
