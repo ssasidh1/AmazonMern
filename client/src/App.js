@@ -1,10 +1,11 @@
 
 import React from 'react';
 import FetchByYears from './fetchBSByYears';
+import FetchTrend from './FetchTrend'
 const App = () => {
   return (
   <>
-    <FetchByYears />
+    <FetchTrend />
     
   </>
   );

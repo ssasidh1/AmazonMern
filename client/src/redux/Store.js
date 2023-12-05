@@ -1,8 +1,10 @@
 import {configureStore} from '@reduxjs/toolkit'
 import yearSlice from './yearSlice'
+import trendSlice from './trendSlice';
 const store = configureStore({
     reducer:{
-        BSYears: yearSlice
+        BSYears: yearSlice,
+        trendByYears:trendSlice
     }
 })
 

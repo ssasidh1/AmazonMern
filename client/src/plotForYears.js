@@ -37,9 +37,9 @@ const getXY = (selector)=>{
 
 const PlotForYears = () => {
 	const selector = useSelector(state => state.BSYears.data)
-	const {amazon,years,pc,count } =getXY(selector)
+	// const {amazon,years,pc,count } =getXY(selector)
 	
-	
+	const amazon =selector.filter((item)=> item.brand === "Amazonbasics")
 
 	return (
 		<BarChart width={700} height={400} data={amazon} margin={{

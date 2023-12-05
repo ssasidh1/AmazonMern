@@ -3,16 +3,30 @@ export async function AggBestSellingCategories(collection){
     const coll = collection;
     const pipeline = [
         {
+            $addFields: {
+                parsedDate: {
+                    $dateFromString: {
+                        dateString: "$reviews.date"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                year: { $year: "$parsedDate" },
+                date: { $dateToString: { format: "%Y-%m-%d", date: "$parsedDate" } }
+            }
+        },
+        {
             $match: {
-                $and: [
-                    { "brand": { $in: ["Amazon", "Amazonbasics"] } },
-                    { "reviews.rating": { $gt: 4 } }
-                ]
+                "brand": { $in: ["Amazon", "Amazonbasics"] },
+                "reviews.rating": { $gt: 4 }
             }
         },
         {
             $group: {
-                _id: { brand: "$brand", primaryCategories: "$primaryCategories" },
+                _id: { brand: "$brand",year: "$year"},
+                
                 count: { $sum: 1 }
             }
         },
@@ -20,20 +34,24 @@ export async function AggBestSellingCategories(collection){
             $project: {
                 _id: 0,
                 brand: "$_id.brand",
-                primaryCategories: "$_id.primaryCategories",
+                year: "$_id.year",
                 count: 1
             }
         },
         {
-            $sort: { count: -1 }
+            $sort: { count: 1 }
         }
     ];
     
-    const aggCursor = coll.aggregate(pipeline)
+    const aggCursor =  await coll.aggregate(pipeline).toArray();
 
-    for await (const doc of aggCursor){
+    for await (const doc of aggCursor) {
         console.log(doc);
     }
+    // )const c = await aggCursor.toArray(
+    console.log("arr",  aggCursor)
+
+    return aggCursor;
 }
 
 export async function AggBestSellCategoriesByYear(collection) {
@@ -68,7 +86,7 @@ export async function AggBestSellCategoriesByYear(collection) {
                     year: "$year",
                     primaryCategories: "$primaryCategories"
                 },
-                avgRating: { $avg: "$reviews.rating" },
+                // avgRating: { $avg: "$reviews.rating" },
                 count: { $sum: 1 }
             }
         },
