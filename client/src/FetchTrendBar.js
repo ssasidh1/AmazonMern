@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from "react-redux"
-import { getYRData } from './redux/yearSlice';
-import { getTrends } from './redux/trendSlice';
-import PlotTrend from './plotTrend';
+import {PlotTrendBar} from './plotTrendBar';
 
-
-let params = {
-
-}
-const FetchTrend = ({endpoint,x,y, tooltip}) => {
+const FetchTrendBar = ({x,y, tooltip,endpoint}) => {
   // const dispatch = useDispatch();
   // const selector = useSelector(state => state.trendByYears.data)
 
@@ -17,9 +10,9 @@ const FetchTrend = ({endpoint,x,y, tooltip}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("endpoint",endpoint);
+        console.log("fetchBar endpoint",endpoint);
         const response = await fetch(endpoint);
-        console.log("inside", response)
+        console.log("inside fetchBar", response)
         const jsonData = await response.json();
         // dispatch(getTrends(jsonData))
         setData(jsonData);
@@ -34,10 +27,9 @@ const FetchTrend = ({endpoint,x,y, tooltip}) => {
 
   return (
     <div>
-      <PlotTrend data={data} x={x} y={y} tooltip={tooltip} />
+      <PlotTrendBar data={data} x={x} y={y} tooltip={tooltip} />
 
     </div>
   );
 };
-
-export default FetchTrend;
+export default FetchTrendBar;

@@ -5,11 +5,12 @@ import { AggBestSellCategoriesByYear,AggBestSellingCategories, bestSellerPerManu
 const { client, database, collection } = await connectDB();
 const app = express();
 
-app.get("/api", async (req, res) => {
+app.get("/api/cat/best/year/:brand", async (req, res) => {
     try {
 
         //const result = await AggBestSellCategoriesByYear(collection);
-        const result = await AggBestSellCategoriesByYear(collection);
+        const result = await AggBestSellCategoriesByYear(collection,req.params.brand);
+        console.log(" call completed ",req.url)
         res.json(result);
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -17,11 +18,12 @@ app.get("/api", async (req, res) => {
     }
 })
 
-app.get("/api/trends", async (req, res) => {
+app.get("/api/cat/trends/:brand", async (req, res) => {
     try {
 
         //const result = await AggBestSellCategoriesByYear(collection);
-        const result = await AggBestSellingCategories(collection);
+        const result = await AggBestSellingCategories(collection,req.params.brand);
+        
         res.json(result);
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -33,7 +35,9 @@ app.get("/api/manu/bestseller", async (req, res) => {
     try {
 
         //const result = await AggBestSellCategoriesByYear(collection);
+        console.log(" caught")
         const result = await bestSellerPerManufacturer(collection);
+        
         res.json(result);
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -62,11 +66,25 @@ app.get("/api/manu/best/year", async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
-app.get("/api/manu/yearly", async (req, res) => {
+
+function modelData(data){
+    
+    // let map={}
+    // data.map((obj)=>{
+    //     if(!Object.hasOwn(map,obj.manufacturer))map[obj.manufacturer]=obj.manufacturer;
+    // })
+    
+    // data.map((obj)=>{
+    //     return{}
+    // })
+
+}
+app.get("/api/manu/yearly/", async (req, res) => {
     try {
 
         //const result = await AggBestSellCategoriesByYear(collection);
         const result = await manufacturerYearlyRating(collection);
+        modelData(result);
         res.json(result);
     } catch (error) {
         console.error('Error fetching data:', error);

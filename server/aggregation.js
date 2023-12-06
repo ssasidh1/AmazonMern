@@ -89,9 +89,10 @@ export async function topManufacturerPerYear(collection) {
 
 }
 
-export async function AggBestSellingCategories(collection) {
+export async function AggBestSellingCategories(collection,brand) {
 
     const coll = collection;
+    console.log("brand is ",brand)
     const pipeline = [
         {
             $addFields: {
@@ -110,7 +111,7 @@ export async function AggBestSellingCategories(collection) {
         },
         {
             $match: {
-                "brand": { $in: ["Amazon", "Amazonbasics"] },
+                "brand": brand,
                 "reviews.rating": { $gt: 4 }
             }
         },
@@ -146,10 +147,21 @@ export async function AggBestSellingCategories(collection) {
 }
 
 export async function manufacturerYearlyRating(collection) {
-    return await collection.aggregate([
-        {
+    let ret=await collection.aggregate([
+        {   
+            
             $addFields: {
-                year: { $year: { $dateFromString: { dateString: "$reviews.date" } } }
+                year: { $year: { $dateFromString: { dateString: "$reviews.date" } } },
+                manufacturer:{
+                    $function:{
+                        body:function(manu){
+                            if(manu === "Amazon" || manu === "Amazon.com")return "Amazon.com";
+                            else return manu
+                        },
+                        args:["$manufacturer"],
+                        lang:"js"
+                    }
+                }
             },
         }, {
             $group: {
@@ -165,21 +177,50 @@ export async function manufacturerYearlyRating(collection) {
         }, {
             $sort: { "_id.year": 1 },
         },
-        {
-            $project: {
-                year: "$_id.year",
-                manufacturer: "$_id.manufacturer",
-                avgRating: "$avgRating",
-                _id: 0,
+        // {
+        //     $project: {
+        //         year: "$_id.year",
+        //         manufacturer: "$_id.manufacturer",
+        //         avgRating: "$avgRating",
+        //         _id: 0,
 
+        //     }
+        // }
+        {
+
+            $group:{
+                _id:"$_id.year",
+                details:{
+                    $accumulator:{
+                        init: function(){
+                            return {}
+                        }
+                    
+                        ,
+                        accumulate: function(state,manufacturer,avgRating,year){
+
+                            return {...state,year:year,[`${manufacturer}Rating`]:avgRating}
+                        },
+                        merge: function(state1,state2){
+                            return {...state1,...state2};
+                        },
+                        accumulateArgs: ["$_id.manufacturer","$avgRating","$_id.year"],
+                        finalize: function(state){
+                            return state;
+                        },
+                        lang:"js"
+                    }
+                }
             }
         }
-    ]).toArray();
+    ],{serializeFunctions:true}).toArray();
+    console.log(ret);
 
 }
 
 export async function bestSellerPerManufacturer(collection) {
-    await collection.aggregate([
+    
+    return await collection.aggregate([
         {
             $group: {
                 _id: {
@@ -220,11 +261,14 @@ export async function bestSellerPerManufacturer(collection) {
         }
     ]).toArray();
 
+    
+
 }
 
-export async function AggBestSellCategoriesByYear(collection) {
+export async function AggBestSellCategoriesByYear(collection, brand) {
     const coll = collection;
     console.log("col", coll)
+    console.log("brand is ",brand)
     const pipeline = [
         {
             $addFields: {
@@ -243,7 +287,7 @@ export async function AggBestSellCategoriesByYear(collection) {
         },
         {
             $match: {
-                "brand": { $in: ["Amazon", "Amazonbasics"] },
+                "brand": brand,
                 "reviews.rating": { $gt: 4 }
             }
         },
