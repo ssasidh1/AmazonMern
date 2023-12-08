@@ -1,0 +1,61 @@
+*{
+    
+}
+
+.graphs > div{
+ /* border:2px solid red; */
+ position:relative ;
+ box-shadow: 1px 12px 15px 1px grey;
+ 
+ width:50%;
+ 
+ height:100%;
+ 
+}
+.custom-tooltip{
+    
+    
+    
+ 
+    width:50%;
+    opacity:0.75;
+    border-radius:5px;
+    background-color:white!important;
+    font-weight: 500;
+    font-family:'Times New Roman', Times, serif
+
+}
+h1{
+    background-color: lightblue;
+    margin-top:0;
+    padding:1%;
+}
+.graphs{
+    display:flex;
+    flex-wrap: wrap;
+    gap:1rem;
+
+    justify-content: center;
+    padding:2rem;
+}
+
+.hidden{
+    display: none;
+}
+
+select{
+    border:2px solid white;
+    font-weight:900;
+    font-size: larger;
+    
+    border-bottom:2px solid black;
+    
+}
+select{
+    /* border:2px solid red; */
+}
+.title{
+    border-bottom:2px solid black;
+    display:inline-block;
+    
+}

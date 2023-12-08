@@ -8,17 +8,22 @@ import PlotTrend from './plotTrend';
 let params = {
 
 }
-const FetchTrend = ({endpoint,x,y, tooltip}) => {
+const FetchTrend = ({endpoint,x,y, tooltip,title,custom,scaleX,scaleY}) => {
   // const dispatch = useDispatch();
   // const selector = useSelector(state => state.trendByYears.data)
 
   const [data, setData] = useState(null);
+  const [brand, setBrand] = useState("Amazon");
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("endpoint",endpoint);
-        const response = await fetch(endpoint);
+        console.log("endpoint",endpoint,brand);
+        
+        let url=endpoint
+        if(custom === "brand" ) url=url+brand;
+        const response = await fetch(url);
         console.log("inside", response)
         const jsonData = await response.json();
         // dispatch(getTrends(jsonData))
@@ -30,11 +35,21 @@ const FetchTrend = ({endpoint,x,y, tooltip}) => {
     };
 
     fetchData();
-  }, []);
+  }, [brand]);
 
   return (
     <div>
-      <PlotTrend data={data} x={x} y={y} tooltip={tooltip} />
+      <center>
+        {console.log(" BRANDY ",custom!=="brand")}
+      <div >
+      <select value={brand}  className={custom === "brand" ? "brandSelector":"hidden" } onChange={(event)=>setBrand(event.target.value)}>
+        <option value="Amazon">Amazon Brand</option>
+        <option value="Amazonbasics">Amazonbasics</option>
+      </select>
+      <h3 className='title'>{title}</h3>
+      </div>
+      </center>
+      <PlotTrend scaleX={scaleY} scaleY={scaleX} data={data} x={x} y={y} tooltip={tooltip} />
 
     </div>
   );
