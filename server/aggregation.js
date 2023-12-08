@@ -1,9 +1,29 @@
-export async function topProductsPerYear(collection) {
-
+export async function topProductsPerYear(collection,database) {
+    
+    let words=await database.collection("positiveWords").find().toArray();
+    let list=words.map((obj)=>obj.positiveWords );
+    console.log(" ##### list\n",list);
     return await collection.aggregate([
         {
+            
+           
             $addFields: {
-                year: { $year: { $dateFromString: { dateString: "$reviews.date" } } }
+                year: { $year: { $dateFromString: { dateString: "$reviews.date" } } },
+                keywords:{
+                    $function:{
+                            body:
+                            function(review){
+
+                                let output=[];
+                                for( word of "$$list"){
+                                    review.find(word);
+                                }
+                                return output;
+                            },
+                            args:["$reviews.text"],
+                            lang:"js"
+                    }
+                }
             },
         }, {
             $group: {
@@ -13,7 +33,8 @@ export async function topProductsPerYear(collection) {
                 },
 
                 avgRating: { $avg: "$reviews.rating" },
-                img:{$first:"$imageURLs"}
+                img:{$first:"$imageURLs"},
+                keywords:{$first:"$keywords"}
 
             },
 
@@ -25,7 +46,9 @@ export async function topProductsPerYear(collection) {
                 _id: "$_id.year",
                 name: { $first: "$_id.product" },
                 rating: { $first: "$avgRating" },
-                img:{$first:"$img"}
+                img:{$first:"$img"},
+                keywords:{$first:"$keywords"}
+                
 
             }
         },
@@ -38,10 +61,11 @@ export async function topProductsPerYear(collection) {
                 name: "$name",
                 avgRating: "$rating",
                 _id: 0,
+                keywords:1,
                 img:1
             }
         }
-    ]).toArray();
+    ],{serializeFunctions:true}).toArray();
 }
 
 export async function topManufacturerPerYear(collection) {

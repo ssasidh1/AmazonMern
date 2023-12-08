@@ -48,7 +48,7 @@ app.get("/api/products/best/year", async (req, res) => {
     try {
 
         //const result = await AggBestSellCategoriesByYear(collection);
-        const result = await topProductsPerYear(collection);
+        const result = await topProductsPerYear(collection,database);
         console.log(" TopProductsperyear",result)
         res.json(result);
     } catch (error) {
