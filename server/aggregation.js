@@ -16,7 +16,9 @@ export async function topProductsPerYear(collection,database) {
 
                                 let output=[];
                                 for( word of "$$list"){
-                                    review.find(word);
+                                    if (this.reviews.text.includes(word)) {
+                                        output.push(word);
+                                      }
                                 }
                                 return output;
                             },
