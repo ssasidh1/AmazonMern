@@ -13,6 +13,7 @@ export async function topProductsPerYear(collection) {
                 },
 
                 avgRating: { $avg: "$reviews.rating" },
+                img:{$first:"$imageURLs"}
 
             },
 
@@ -24,6 +25,7 @@ export async function topProductsPerYear(collection) {
                 _id: "$_id.year",
                 name: { $first: "$_id.product" },
                 rating: { $first: "$avgRating" },
+                img:{$first:"$img"}
 
             }
         },
@@ -36,7 +38,7 @@ export async function topProductsPerYear(collection) {
                 name: "$name",
                 avgRating: "$rating",
                 _id: 0,
-
+                img:1
             }
         }
     ]).toArray();
@@ -89,10 +91,10 @@ export async function topManufacturerPerYear(collection) {
 
 }
 
-export async function AggBestSellingCategories(collection,brand) {
+export async function brandTrend(collection,brand) {
 
     const coll = collection;
-    console.log("brand is ",brand)
+    // console.log("brand is ",brand)
     const pipeline = [
         {
             $addFields: {
@@ -112,36 +114,39 @@ export async function AggBestSellingCategories(collection,brand) {
         {
             $match: {
                 "brand": brand,
-                "reviews.rating": { $gt: 4 }
+                // "reviews.rating": { $gt: 4 }
             }
         },
         {
             $group: {
                 _id: { brand: "$brand", year: "$year" },
 
-                count: { $sum: 1 }
+                avgRating: { $avg: "$reviews.rating" },
+                
             }
         },
+
+
         {
             $project: {
                 _id: 0,
                 brand: "$_id.brand",
                 year: "$_id.year",
-                count: 1
+                Rating: {$round:["$avgRating",0]}
             }
         },
         {
-            $sort: { count: 1 }
+            $sort: { year: 1 }
         }
     ];
 
     const aggCursor = await coll.aggregate(pipeline).toArray();
 
     for await (const doc of aggCursor) {
-        console.log(doc);
+        // console.log(doc);
     }
     // )const c = await aggCursor.toArray(
-    console.log("arr", aggCursor)
+    // console.log("arr", aggCursor)
 
     return aggCursor;
 }
@@ -193,12 +198,13 @@ export async function manufacturerYearlyRating(collection) {
                 details:{
                     $accumulator:{
                         init: function(){
-                            return {}
+                            return {sum:0}
                         }
                     
                         ,
                         accumulate: function(state,manufacturer,avgRating,year){
 
+                            //return {sum:state.sum+1}
                             return {...state,year:year,[`${manufacturer}Rating`]:avgRating}
                         },
                         merge: function(state1,state2){
@@ -214,7 +220,7 @@ export async function manufacturerYearlyRating(collection) {
             }
         }
     ],{serializeFunctions:true}).toArray();
-    console.log(ret);
+    // console.log(ret);
 
 }
 
@@ -226,10 +232,11 @@ export async function bestSellerPerManufacturer(collection) {
                 _id: {
                     manufacturer: "$manufacturer",
                     product: "$name",
-
+                    
                 },
 
                 avgRating: { $avg: "$reviews.rating" },
+                img:{$first:"$imageURLs"}
 
             },
 
@@ -242,7 +249,9 @@ export async function bestSellerPerManufacturer(collection) {
             $group: {
                 _id: "$_id.manufacturer",
                 bestSeller: { $first: "$_id.product" },
-                bestSellerRating: { $first: "$avgRating" }
+                bestSellerRating: { $first: "$avgRating" },
+                img:{$first:"$img"}
+                
             }
         },
 
@@ -256,6 +265,7 @@ export async function bestSellerPerManufacturer(collection) {
                 bestSeller: 1,
                 bestSellerRating: 1,
                 _id: 0,
+                img:1
 
             }
         }
@@ -267,8 +277,8 @@ export async function bestSellerPerManufacturer(collection) {
 
 export async function AggBestSellCategoriesByYear(collection, brand) {
     const coll = collection;
-    console.log("col", coll)
-    console.log("brand is ",brand)
+    // console.log("col", coll)
+    // console.log("brand is ",brand)
     const pipeline = [
         {
             $addFields: {
@@ -288,7 +298,7 @@ export async function AggBestSellCategoriesByYear(collection, brand) {
         {
             $match: {
                 "brand": brand,
-                "reviews.rating": { $gt: 4 }
+                
             }
         },
         {
@@ -299,7 +309,7 @@ export async function AggBestSellCategoriesByYear(collection, brand) {
                     primaryCategories: "$primaryCategories"
                 },
                 // avgRating: { $avg: "$reviews.rating" },
-                count: { $sum: 1 }
+                count: { $avg: "$reviews.rating" }
             }
         },
 
@@ -329,11 +339,11 @@ export async function AggBestSellCategoriesByYear(collection, brand) {
                 year: "$_id.year",
 
                 topCategory: 1,
-                count: 1,
+                Rating:"$count"
             },
         },
         {
-            $sort: { year: 1, count: -1 },
+            $sort: { year: 1},
         },
 
     ];
@@ -341,10 +351,10 @@ export async function AggBestSellCategoriesByYear(collection, brand) {
     const aggCursor = await coll.aggregate(pipeline).toArray();
 
     for await (const doc of aggCursor) {
-        console.log(doc);
+        // console.log(doc);
     }
     // )const c = await aggCursor.toArray(
-    console.log("arr", aggCursor)
+    // console.log("arr", aggCursor)
 
     return aggCursor;
 }

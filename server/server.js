@@ -1,6 +1,6 @@
 import express from 'express';
 import { connectDB } from './connectDB.js';
-import { AggBestSellCategoriesByYear,AggBestSellingCategories, bestSellerPerManufacturer, manufacturerYearlyRating, topManufacturerPerYear, topProductsPerYear } from './aggregation.js';
+import { AggBestSellCategoriesByYear,brandTrend, bestSellerPerManufacturer, manufacturerYearlyRating, topManufacturerPerYear, topProductsPerYear } from './aggregation.js';
 
 const { client, database, collection } = await connectDB();
 const app = express();
@@ -22,7 +22,7 @@ app.get("/api/cat/trends/:brand", async (req, res) => {
     try {
 
         //const result = await AggBestSellCategoriesByYear(collection);
-        const result = await AggBestSellingCategories(collection,req.params.brand);
+        const result = await brandTrend(collection,req.params.brand);
         
         res.json(result);
     } catch (error) {
@@ -49,6 +49,7 @@ app.get("/api/products/best/year", async (req, res) => {
 
         //const result = await AggBestSellCategoriesByYear(collection);
         const result = await topProductsPerYear(collection);
+        console.log(" TopProductsperyear",result)
         res.json(result);
     } catch (error) {
         console.error('Error fetching data:', error);

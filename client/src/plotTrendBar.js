@@ -11,12 +11,15 @@ export const CustomTooltip = ({ x,tooltip,y,active, payload, label }) => {
 		// console.log("full",payload)
 		// console.log("y ",y)
 		// console.log("tooltip",tooltip)
+		let src= payload[0].payload["img"];
 	  return (
 		<div className="custom-tooltip" style={{ backgroundColor: 'AliceBlue', padding: '5px' }}>
 		  <p className="label">{`${x}: ${label}`}</p>
 		  {/* <p className='topC'>{`topCategory:${payload[0].payload.topCategory}`}</p> */}
 		<p className='brand'>{`${tooltip}:${payload[0].payload[tooltip]}`}</p>
 		<p className='count'>{`${y}:${payload[0].payload[y]}`}</p>
+		
+		{src && src.split(",").map((val)=><img width={50} height={50} src={val} alt="Missing"></img>)}
 		</div>
 	  );
 	}
@@ -47,7 +50,7 @@ export const CustomTooltip = ({ x,tooltip,y,active, payload, label }) => {
 // }
 
 
-export const PlotTrendBar = ({data,x,y,tooltip}) => {
+export const PlotTrendBar = ({data,x,y,tooltip,height,width}) => {
 
 	// const selector = useSelector(state => state.trendByYears.data)
 	
@@ -55,17 +58,17 @@ export const PlotTrendBar = ({data,x,y,tooltip}) => {
 	
 	
 	return (null === data )? <h3>.....loading</h3>:(
-		<BarChart width={700} height={400} data={data} margin={{
+		<BarChart width={width} height={height} data={data} margin={{
             top: 20,
             right: 30,
             left: 20,
-            bottom: 5,
+            bottom:20
           }} >
 			<CartesianGrid  strokeDasharray="3 3" />
-			<XAxis dataKey={x} />
-			<YAxis />
-			<Tooltip content={<CustomTooltip tooltip={tooltip} y={y} />}/>
-			<Legend />
+			<XAxis dataKey={x}  label={{ offset:-10,value: x, position: 'insideBottom' }}/>
+			<YAxis  label={{ value: y, angle: -90, position: 'insideLeft' }}/>
+			<Tooltip content={<CustomTooltip tooltip={tooltip} y={y} x={x}/>}/>
+			{/* <Legend {...{layout:"horizontal",align:"right",iconType:"square"}}/> */}
 			<Bar dataKey={y} barSize={30} fill="#8884d8" />
 		</BarChart>
 	);
