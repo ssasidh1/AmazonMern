@@ -1,7 +1,7 @@
 import express from 'express';
 import { connectDB } from './connectDB.js';
-import { AggBestSellCategoriesByYear,AggBestSellingCategories, bestSellerPerManufacturer, manufacturerYearlyRating, topManufacturerPerYear, topProductsPerYear } from './aggregation.js';
-
+import { AggBestSellCategoriesByYear,AggBestSellingCategories, bestSellerPerManufacturer, manufacturerYearlyRating, topManufacturerPerYear, topProductsPerYear,getReviewTitle } from './aggregation.js';
+import {sentimentProcessor} from './nlp.js'
 const { client, database, collection } = await connectDB();
 const app = express();
 
@@ -67,6 +67,21 @@ app.get("/api/manu/best/year", async (req, res) => {
     }
 })
 
+app.get("/api/review/title", async (req, res) => {
+    try {
+
+        //const result = await AggBestSellCategoriesByYear(collection);
+        const result = await getReviewTitle(collection);
+        
+        const sentiWords =sentimentProcessor(result);
+        res.json(sentiWords);
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
+
 function modelData(data){
     
     // let map={}
@@ -92,4 +107,4 @@ app.get("/api/manu/yearly/", async (req, res) => {
     }
 })
 
-app.listen(3001, () => { console.log("Im listneing") })
+app.listen(3001, () => { console.log("Im listening.........") })

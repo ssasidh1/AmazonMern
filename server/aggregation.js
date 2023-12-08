@@ -348,3 +348,23 @@ export async function AggBestSellCategoriesByYear(collection, brand) {
 
     return aggCursor;
 }
+
+
+
+export async function getReviewTitle(collection){
+    let ret = await collection.aggregate([{
+        $project:{
+            _id:0,
+            reviewTitle: "$reviews.title"
+        }
+    }]).toArray();
+
+    // console.log("ret",ret)
+    return ret;
+
+    
+}
+
+// export async function addColumnSentiment(collection){
+//     let ret = await collection.
+// }
