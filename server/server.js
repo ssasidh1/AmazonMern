@@ -33,7 +33,7 @@ app.get("/api/cat/trends/:brand", async (req, res) => {
 
 app.get("/api/manu/bestseller", async (req, res) => {
     try {
-
+        console.log(" recieved the message ");
         //const result = await AggBestSellCategoriesByYear(collection);
         console.log(" caught")
         const result = await bestSellerPerManufacturer(collection);
