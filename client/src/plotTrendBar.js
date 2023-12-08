@@ -12,12 +12,14 @@ export const CustomTooltip = ({ x,tooltip,y,active, payload, label }) => {
 		// console.log("y ",y)
 		// console.log("tooltip",tooltip)
 		let src= payload[0].payload["img"];
+		let reviews= payload[0].payload["reviews"];
 	  return (
 		<div className="custom-tooltip" style={{ backgroundColor: 'AliceBlue', padding: '5px' }}>
-		  <p className="label">{`${x}: ${label}`}</p>
+		  <p className="label"><b>{x}</b>: {label}</p>
+		  {reviews && <p ><b>Key review</b>: {reviews}</p>}
 		  {/* <p className='topC'>{`topCategory:${payload[0].payload.topCategory}`}</p> */}
-		<p className='brand'>{`${tooltip}:${payload[0].payload[tooltip]}`}</p>
-		<p className='count'>{`${y}:${payload[0].payload[y]}`}</p>
+		<p className='brand'><b>{tooltip}</b>: {payload[0].payload[tooltip]}</p>
+		<p className='count'><b>{y}</b>: {payload[0].payload[y]}</p>
 		
 		{src && src.split(",").map((val)=><img width={50} height={50} src={val} alt="Missing"></img>)}
 		</div>

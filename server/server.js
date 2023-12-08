@@ -1,6 +1,6 @@
 import express from 'express';
 import { connectDB } from './connectDB.js';
-import { AggBestSellCategoriesByYear,brandTrend, bestSellerPerManufacturer, manufacturerYearlyRating, topManufacturerPerYear, topProductsPerYear,getReviewTitle } from './aggregation.js';
+import { AggBestSellCategoriesByYear, brandTrend, bestSellerPerManufacturer, manufacturerYearlyRating, topManufacturerPerYear, topProductsPerYear,getReviewTitle } from './aggregation.js';
 import {sentimentProcessor} from './nlp.js'
 const { client, database, collection } = await connectDB();
 const app = express();
@@ -21,7 +21,7 @@ app.get("/api/cat/best/year/:brand", async (req, res) => {
 app.get("/api/cat/trends/:brand", async (req, res) => {
     try {
 
-        //const result = await AggBestSellCategoriesByYear(collection);
+        // const result = await AggBestSellCategoriesByYear(collection);
         const result = await brandTrend(collection,req.params.brand);
         
         res.json(result);
@@ -49,6 +49,7 @@ app.get("/api/products/best/year", async (req, res) => {
 
         //const result = await AggBestSellCategoriesByYear(collection);
         const result = await topProductsPerYear(collection,database);
+        // const result=await test(collection,database);
         console.log(" TopProductsperyear",result)
         res.json(result);
     } catch (error) {
