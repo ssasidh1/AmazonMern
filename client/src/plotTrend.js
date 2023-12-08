@@ -24,7 +24,9 @@ const PlotTrend = ({data,x,y,tooltip}) => {
           
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={x} />
+          <XAxis dataKey={x} >
+          
+            </XAxis>
           <YAxis dataKey={y} domain={[-100,'dataMax']}/>
           <Tooltip content={<CustomTooltip x={x} y={y} tooltip={tooltip}/>} />
           <Legend />

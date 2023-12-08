@@ -13,7 +13,7 @@ export const CustomTooltip = ({ x,tooltip,y,active, payload, label }) => {
 		// console.log("tooltip",tooltip)
 	  return (
 		<div className="custom-tooltip" style={{ backgroundColor: 'AliceBlue', padding: '5px' }}>
-		  <p className="label">{`${label}: ${label}`}</p>
+		  <p className="label">{`${x}: ${label}`}</p>
 		  {/* <p className='topC'>{`topCategory:${payload[0].payload.topCategory}`}</p> */}
 		<p className='brand'>{`${tooltip}:${payload[0].payload[tooltip]}`}</p>
 		<p className='count'>{`${y}:${payload[0].payload[y]}`}</p>
